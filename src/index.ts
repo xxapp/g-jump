@@ -74,9 +74,6 @@ const main = async () => {
           currentIndex: 0,
           currentTransaction: result.transactions[0] || null,
         };
-        if (state.currentTransaction) {
-          await processTransaction(state.currentTransaction);
-        }
       } catch (error) {
         handleError(error as Error);
       }
