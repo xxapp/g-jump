@@ -2,6 +2,8 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
+const version = process.env.VERSION || '0.1';
+
 export default {
   input: 'src/index.ts',
   output: {
@@ -10,7 +12,7 @@ export default {
     banner: `// ==UserScript==
 // @name         Sui
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      ${version}
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.sui.com/tally/new.do

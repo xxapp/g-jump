@@ -1,8 +1,8 @@
 name: Sync to Gist
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build-and-sync:
@@ -38,8 +38,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Get version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
       - name: Build
         run: pnpm build
+        env:
+          VERSION: ${{ env.VERSION }}
 
       - name: Sync to Gist
         uses: exuanbo/actions-deploy-gist@v1
