@@ -97,14 +97,10 @@ export const createTransactionProcessor = () => {
       return Boolean(counterpartyGuess?.confident);
     },
 
-    learn: (transaction: Transaction, confident: boolean): GuessData => {
+    learn: (transaction: Transaction, guessData: GuessData, confident: boolean): GuessData => {
       const elementId = document.querySelector(SELECTORS.typeSelector)?.id;
       if (!elementId) {
-        return {
-          counterparty: {},
-          account: {},
-          description: {},
-        };
+        return guessData;
       }
 
       const type = elementId === 'tm-1' ? 'payout' : 'income';
@@ -116,29 +112,35 @@ export const createTransactionProcessor = () => {
       const projectName = (document.querySelector(SELECTORS.projectText) as HTMLInputElement)?.value;
 
       return {
+        ...guessData,
         counterparty: {
+          ...guessData.counterparty,
           [transaction.counterparty]: {
             category: [type, categoryText, Number(categoryId)],
             confident,
           },
         },
         account: {
+          ...guessData.account,
           [transaction.account]: {
             account: { id: accountId, name: accountName },
           },
         },
-        description: DESCRIPTION_SAMPLES.reduce((acc, item) => {
-          if (transaction.description.includes(item)) {
-            return {
-              ...acc,
-              [item]: {
-                project: { id: projectId, name: projectName },
-                category: [type, categoryText, Number(categoryId)],
-              },
-            };
-          }
-          return acc;
-        }, {}),
+        description: {
+          ...guessData.description,
+          ...DESCRIPTION_SAMPLES.reduce((acc, item) => {
+            if (transaction.description.includes(item)) {
+              return {
+                ...acc,
+                [item]: {
+                  project: { id: projectId, name: projectName },
+                  category: [type, categoryText, Number(categoryId)],
+                },
+              };
+            }
+            return acc;
+          }, {}),
+        },
       };
     },
 

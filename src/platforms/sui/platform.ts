@@ -58,22 +58,22 @@ export const createSuiPlatform = () => {
       return processor.canAutoSave(transaction, guessData);
     },
 
-    save: async (state: { currentTransaction: Transaction | null }, autoSave: boolean): Promise<void> => {
-      await new Promise(resolve => setTimeout(resolve, 700));
+    save: async (state: { currentTransaction: Transaction | null; guessData: GuessData }, autoSave: boolean): Promise<void> => {
       if (!state.currentTransaction) return;
 
       if (!autoSave) {
-        const newGuessData = processor.learn(state.currentTransaction, false);
+        const newGuessData = processor.learn(state.currentTransaction, state.guessData, false);
         await saveGuessData(newGuessData);
       }
 
       await processor.save();
+      await new Promise(resolve => setTimeout(resolve, 700));
     },
 
-    saveWithConfidence: async (state: { currentTransaction: Transaction | null }): Promise<void> => {
+    saveWithConfidence: async (state: { currentTransaction: Transaction | null; guessData: GuessData }): Promise<void> => {
       if (!state.currentTransaction) return;
 
-      const newGuessData = processor.learn(state.currentTransaction, true);
+      const newGuessData = processor.learn(state.currentTransaction, state.guessData, true);
       await saveGuessData(newGuessData);
       await processor.save();
     },
