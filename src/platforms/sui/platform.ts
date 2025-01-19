@@ -59,6 +59,7 @@ export const createSuiPlatform = () => {
     },
 
     save: async (state: { currentTransaction: Transaction | null }, autoSave: boolean): Promise<void> => {
+      await new Promise(resolve => setTimeout(resolve, 700));
       if (!state.currentTransaction) return;
 
       if (!autoSave) {
