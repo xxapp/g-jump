@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A helper script for Sui",
   "main": "dist/sui-helper.user.js",
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
