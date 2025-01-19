@@ -63,6 +63,7 @@ export const createSuiPlatform = () => {
 
       if (!autoSave) {
         const newGuessData = processor.learn(state.currentTransaction, state.guessData, false);
+        state.guessData = newGuessData;
         await saveGuessData(newGuessData);
       }
 
@@ -74,6 +75,7 @@ export const createSuiPlatform = () => {
       if (!state.currentTransaction) return;
 
       const newGuessData = processor.learn(state.currentTransaction, state.guessData, true);
+      state.guessData = newGuessData;
       await saveGuessData(newGuessData);
       await processor.save();
     },
