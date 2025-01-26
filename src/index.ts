@@ -1,20 +1,25 @@
 import { createControlPanel, createInfoPanel } from './ui';
 import { createSuiPlatform } from './platforms/sui';
 import { Transaction } from './types/transaction';
+import { AlipayRecord, WepayRecord } from './platforms/sui/types';
 
 // 应用状态类型
 interface AppState {
   currentTransaction: Transaction | null;
+  currentRawRecord: (AlipayRecord | WepayRecord) | null;
   guessData: any;
   transactions: Transaction[];
+  rawRecords: (AlipayRecord | WepayRecord)[];
   currentIndex: number;
 }
 
 // 创建初始状态
 const createInitialState = (): AppState => ({
   currentTransaction: null,
+  currentRawRecord: null,
   guessData: null,
   transactions: [],
+  rawRecords: [],
   currentIndex: 0,
 });
 
@@ -31,11 +36,11 @@ const main = async () => {
   const infoPanel = createInfoPanel(document.body);
 
   // 处理当前交易
-  const processTransaction = async (transaction: Transaction) => {
+  const processTransaction = async (transaction: Transaction, rawRecord: AlipayRecord | WepayRecord) => {
     const guessData = state.guessData;
     
     // 显示交易信息
-    infoPanel.showTransaction(transaction);
+    infoPanel.showTransaction(rawRecord);
 
     // 填充表单
     platform.fillForm(transaction, guessData);
@@ -47,9 +52,10 @@ const main = async () => {
         ...state,
         currentIndex: state.currentIndex + 1,
         currentTransaction: state.transactions[state.currentIndex + 1] || null,
+        currentRawRecord: state.rawRecords[state.currentIndex + 1] || null,
       };
-      if (state.currentTransaction) {
-        await processTransaction(state.currentTransaction);
+      if (state.currentTransaction && state.currentRawRecord) {
+        await processTransaction(state.currentTransaction, state.currentRawRecord);
       }
     }
   };
@@ -71,9 +77,14 @@ const main = async () => {
         state = {
           ...state,
           transactions: result.transactions,
+          rawRecords: result.rawRecords,
           currentIndex: 0,
           currentTransaction: result.transactions[0] || null,
+          currentRawRecord: result.rawRecords[0] || null,
         };
+        if (state.currentTransaction && state.currentRawRecord) {
+          await processTransaction(state.currentTransaction, state.currentRawRecord);
+        }
       } catch (error) {
         handleError(error as Error);
       }
@@ -82,8 +93,8 @@ const main = async () => {
     // 开始处理
     controlPanel.onStart(async () => {
       try {
-        if (state.currentTransaction) {
-          await processTransaction(state.currentTransaction);
+        if (state.currentTransaction && state.currentRawRecord) {
+          await processTransaction(state.currentTransaction, state.currentRawRecord);
         }
       } catch (error) {
         handleError(error as Error);
@@ -97,9 +108,10 @@ const main = async () => {
           ...state,
           currentIndex: state.currentIndex + 1,
           currentTransaction: state.transactions[state.currentIndex + 1] || null,
+          currentRawRecord: state.rawRecords[state.currentIndex + 1] || null,
         };
-        if (state.currentTransaction) {
-          await processTransaction(state.currentTransaction);
+        if (state.currentTransaction && state.currentRawRecord) {
+          await processTransaction(state.currentTransaction, state.currentRawRecord);
         } else {
           infoPanel.clear();
         }
@@ -117,9 +129,10 @@ const main = async () => {
             ...state,
             currentIndex: state.currentIndex + 1,
             currentTransaction: state.transactions[state.currentIndex + 1] || null,
+            currentRawRecord: state.rawRecords[state.currentIndex + 1] || null,
           };
-          if (state.currentTransaction) {
-            await processTransaction(state.currentTransaction);
+          if (state.currentTransaction && state.currentRawRecord) {
+            await processTransaction(state.currentTransaction, state.currentRawRecord);
           } else {
             infoPanel.clear();
           }
@@ -138,9 +151,10 @@ const main = async () => {
             ...state,
             currentIndex: state.currentIndex + 1,
             currentTransaction: state.transactions[state.currentIndex + 1] || null,
+            currentRawRecord: state.rawRecords[state.currentIndex + 1] || null,
           };
-          if (state.currentTransaction) {
-            await processTransaction(state.currentTransaction);
+          if (state.currentTransaction && state.currentRawRecord) {
+            await processTransaction(state.currentTransaction, state.currentRawRecord);
           } else {
             infoPanel.clear();
           }

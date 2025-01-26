@@ -7,6 +7,7 @@ import { createTransactionProcessor } from './transaction-processor';
 
 interface FileUploadResult {
   transactions: Transaction[];
+  rawRecords: (AlipayRecord | WepayRecord)[];
 }
 
 export const createSuiPlatform = () => {
@@ -32,22 +33,23 @@ export const createSuiPlatform = () => {
       // 先尝试以 UTF-8 读取
       let text = await readFile(file, 'utf-8');
       let transactions: Transaction[] = [];
+      let rawRecords: (AlipayRecord | WepayRecord)[] = [];
 
       if (text.includes(PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier)) {
         // 如果是支付宝文件，需要用 GBK 重新读取
         text = await readFile(file, 'GBK');
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier);
-        const records = parseCsv<AlipayRecord>(csvData);
-        transactions = records.map(record => alipayTransformer.transform(record));
+        rawRecords = parseCsv<AlipayRecord>(csvData);
+        transactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
       } else if (text.includes(PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier)) {
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier);
-        const records = parseCsv<WepayRecord>(csvData);
-        transactions = records.map(record => wepayTransformer.transform(record));
+        rawRecords = parseCsv<WepayRecord>(csvData);
+        transactions = rawRecords.map(record => wepayTransformer.transform(record as WepayRecord));
       } else {
         throw new Error('Unsupported file format');
       }
 
-      return { transactions };
+      return { transactions, rawRecords };
     },
 
     fillForm: (transaction: Transaction, guessData: GuessData): void => {

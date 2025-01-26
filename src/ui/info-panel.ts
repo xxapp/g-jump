@@ -18,8 +18,8 @@ export const createInfoPanel = (container: HTMLElement) => {
   container.appendChild(panel);
 
   return {
-    showTransaction: (transaction: Transaction) => {
-      panel.innerHTML = JSON.stringify(transaction, null, 2).replace(/\n/g, '<br>');
+    showTransaction: (data: unknown) => {
+      panel.innerHTML = JSON.stringify(data, null, 2).replace(/\n/g, '<br>');
     },
 
     showError: (error: Error) => {
