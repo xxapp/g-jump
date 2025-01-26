@@ -30,26 +30,33 @@ export const createSuiPlatform = () => {
     },
 
     handleFileUpload: async (file: File): Promise<FileUploadResult> => {
-      // 先尝试以 UTF-8 读取
-      let text = await readFile(file, 'utf-8');
       let transactions: Transaction[] = [];
       let rawRecords: (AlipayRecord | WepayRecord)[] = [];
 
+      // 根据文件名判断编码
+      const isAlipayFile = file.name.toLowerCase().includes('alipay');
+      const encoding = isAlipayFile ? 'GBK' : 'utf-8';
+      
+      // 读取文件
+      const text = await readFile(file, encoding);
+      
+      // 检查是否是支付宝文件
       if (text.includes(PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier)) {
-        // 如果是支付宝文件，需要用 GBK 重新读取
-        text = await readFile(file, 'GBK');
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier);
         rawRecords = parseCsv<AlipayRecord>(csvData).reverse();
         transactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
-      } else if (text.includes(PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier)) {
+        return { transactions, rawRecords };
+      }
+      
+      // 检查是否是微信文件
+      if (text.includes(PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier)) {
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier);
         rawRecords = parseCsv<WepayRecord>(csvData).reverse();
         transactions = rawRecords.map(record => wepayTransformer.transform(record as WepayRecord));
-      } else {
-        throw new Error('Unsupported file format');
+        return { transactions, rawRecords };
       }
 
-      return { transactions, rawRecords };
+      throw new Error('Unsupported file format');
     },
 
     fillForm: (transaction: Transaction, guessData: GuessData): void => {
@@ -70,7 +77,7 @@ export const createSuiPlatform = () => {
       }
 
       await processor.save();
-      await new Promise(resolve => setTimeout(resolve, 700));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     },
 
     saveWithConfidence: async (state: { currentTransaction: Transaction | null; guessData: GuessData }): Promise<void> => {
