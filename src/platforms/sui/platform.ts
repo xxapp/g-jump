@@ -39,11 +39,11 @@ export const createSuiPlatform = () => {
         // 如果是支付宝文件，需要用 GBK 重新读取
         text = await readFile(file, 'GBK');
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier);
-        rawRecords = parseCsv<AlipayRecord>(csvData);
+        rawRecords = parseCsv<AlipayRecord>(csvData).reverse();
         transactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
       } else if (text.includes(PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier)) {
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.WEPAY].identifier);
-        rawRecords = parseCsv<WepayRecord>(csvData);
+        rawRecords = parseCsv<WepayRecord>(csvData).reverse();
         transactions = rawRecords.map(record => wepayTransformer.transform(record as WepayRecord));
       } else {
         throw new Error('Unsupported file format');
