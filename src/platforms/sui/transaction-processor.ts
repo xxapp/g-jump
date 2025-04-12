@@ -53,12 +53,13 @@ export const createTransactionProcessor = () => {
   };
 
   return {
-    fillForm: (transaction: Transaction, guessData: GuessData): void => {
+    fillForm: async (transaction: Transaction, guessData: GuessData): Promise<void> => {
       const { type, amount, time } = transaction;
       const guess = guessFields(transaction, guessData);
 
       if (type === TransactionType.OUT || transaction.status === TransactionStatus.REFUND) {
         billManager.changeType(1);
+        await new Promise(resolve => setTimeout(resolve, 500));
         setValue(SELECTORS.outMoney, String(amount * (transaction.status === TransactionStatus.REFUND ? -1 : 1)));
         if (guess.account) {
           setValue(SELECTORS.outAccountText, guess.account.name);
@@ -66,6 +67,7 @@ export const createTransactionProcessor = () => {
         }
       } else if (type === TransactionType.IN) {
         billManager.changeType(5);
+        await new Promise(resolve => setTimeout(resolve, 500));
         setValue(SELECTORS.inMoney, String(amount));
         if (guess.account) {
           setValue(SELECTORS.inAccountText, guess.account.name);

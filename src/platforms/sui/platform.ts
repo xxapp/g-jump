@@ -59,8 +59,8 @@ export const createSuiPlatform = () => {
       throw new Error('Unsupported file format');
     },
 
-    fillForm: (transaction: Transaction, guessData: GuessData): void => {
-      processor.fillForm(transaction, guessData);
+    fillForm: (transaction: Transaction, guessData: GuessData): Promise<void> => {
+      return processor.fillForm(transaction, guessData);
     },
 
     canAutoSave: (transaction: Transaction, guessData: GuessData): boolean => {
@@ -77,7 +77,7 @@ export const createSuiPlatform = () => {
       }
 
       await processor.save();
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
     },
 
     saveWithConfidence: async (state: { currentTransaction: Transaction | null; guessData: GuessData }): Promise<void> => {

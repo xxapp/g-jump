@@ -43,7 +43,7 @@ const main = async () => {
     infoPanel.showTransaction(rawRecord);
 
     // 填充表单
-    platform.fillForm(transaction, guessData);
+    await platform.fillForm(transaction, guessData);
 
     // 检查是否可以自动保存
     if (platform.canAutoSave(transaction, guessData)) {

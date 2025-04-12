@@ -32,6 +32,7 @@ export class AlipayTransformer implements TransactionTransformer<AlipayRecord> {
       case '支出':
         return TransactionType.OUT;
       case '不计收支':
+      case '收入':
         return TransactionType.IN;
       default:
         throw new Error(`Unknown transaction type: ${type}`);
