@@ -1,6 +1,6 @@
 import { GuessData, Transaction } from '../../types/transaction';
 import { Platform, PlatformIdentifier } from '../../types/platform';
-import { PLATFORM_IDENTIFIERS } from './constants';
+import { PLATFORM_IDENTIFIERS, ALIPAY_SKIP_PATTERNS } from './constants';
 import { extractTransactionList, loadGuessData, parseCsv, saveGuessData } from '../../utils';
 import { AlipayRecord, AlipayTransformer, WepayRecord, WepayTransformer } from './types';
 import { createTransactionProcessor } from './transaction-processor';
@@ -44,7 +44,20 @@ export const createSuiPlatform = () => {
       if (text.includes(PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier)) {
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier);
         rawRecords = parseCsv<AlipayRecord>(csvData).reverse();
-        transactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
+        
+        // 转换为 transactions 并过滤掉包含跳过模式的记录
+        const allTransactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
+        transactions = allTransactions.filter(transaction => {
+          const description = transaction.description || '';
+          
+          // 检查商品说明是否包含任何跳过模式
+          const shouldSkip = ALIPAY_SKIP_PATTERNS.some(pattern => 
+            description.includes(pattern)
+          );
+          
+          return !shouldSkip;
+        });
+        
         return { transactions, rawRecords };
       }
       

@@ -18,6 +18,9 @@ export const PLATFORM_IDENTIFIERS: Record<Platform, PlatformIdentifier> = {
 
 export const DESCRIPTION_SAMPLES = ['停车', '停管家'];
 
+// 支付宝记录跳过配置 - 包含这些子字符串的记录将被跳过
+export const ALIPAY_SKIP_PATTERNS = ['长盛安逸纯债债券A-买入'];
+
 // Sui 平台特定的选择器
 export const SELECTORS = {
   outMoney: '#tb-outMoney-1',
