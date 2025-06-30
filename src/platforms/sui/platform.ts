@@ -43,14 +43,13 @@ export const createSuiPlatform = () => {
       // 检查是否是支付宝文件
       if (text.includes(PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier)) {
         const csvData = extractTransactionList(text, PLATFORM_IDENTIFIERS[Platform.ALIPAY].identifier);
-        rawRecords = parseCsv<AlipayRecord>(csvData).reverse();
+        const allRecords = parseCsv<AlipayRecord>(csvData).reverse();
         
-        // 转换为 transactions 并过滤掉包含跳过模式的记录
-        const allTransactions = rawRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
-        transactions = allTransactions.filter(transaction => {
-          const description = transaction.description || '';
+        // 过滤掉包含跳过模式的记录
+        const filteredRecords = allRecords.filter(record => {
+          const description = record['商品说明'] || '';
           
-          // 检查商品说明是否包含任何跳过模式
+          // 检查是否包含任何跳过模式
           const shouldSkip = ALIPAY_SKIP_PATTERNS.some(pattern => 
             description.includes(pattern)
           );
@@ -58,6 +57,8 @@ export const createSuiPlatform = () => {
           return !shouldSkip;
         });
         
+        rawRecords = filteredRecords;
+        transactions = filteredRecords.map(record => alipayTransformer.transform(record as AlipayRecord));
         return { transactions, rawRecords };
       }
       
