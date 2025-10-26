@@ -34,8 +34,8 @@ export const createSuiPlatform = () => {
       let rawRecords: (AlipayRecord | WepayRecord)[] = [];
 
       // 根据文件名判断编码
-      const isAlipayFile = file.name.toLowerCase().includes('alipay');
-      const encoding = isAlipayFile ? 'GBK' : 'utf-8';
+      const isAlipayFile = file.name.toLowerCase().includes('支付宝');
+      const encoding = isAlipayFile ? PLATFORM_IDENTIFIERS[Platform.ALIPAY].encoding : PLATFORM_IDENTIFIERS[Platform.WEPAY].encoding;
       
       // 读取文件
       const text = await readFile(file, encoding);

@@ -1,6 +1,6 @@
 import { Platform, PlatformIdentifier } from '../../types/platform';
 
-export const IDENTIFIER_ALIPAY = '支付宝（中国）网络技术有限公司  电子客户回单';
+export const IDENTIFIER_ALIPAY = '支付宝支付科技有限公司  电子客户回单';
 export const IDENTIFIER_WEPAY = '微信支付账单明细列表';
 
 export const PLATFORM_IDENTIFIERS: Record<Platform, PlatformIdentifier> = {
@@ -12,7 +12,7 @@ export const PLATFORM_IDENTIFIERS: Record<Platform, PlatformIdentifier> = {
   [Platform.WEPAY]: {
     name: 'WeChat Pay',
     identifier: IDENTIFIER_WEPAY,
-    encoding: 'utf-8',
+    encoding: 'GBK',
   },
 };
 
