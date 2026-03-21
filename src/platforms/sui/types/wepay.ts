@@ -27,7 +27,7 @@ export class WepayTransformer implements TransactionTransformer<WepayRecord> {
   }
 
   private parseAmount(amount: string): number {
-    return Number(amount.slice(1));
+    return Number(amount.slice(1).replace(/,/g, ''));
   }
 
   private getTransactionType(type: string): TransactionType {
