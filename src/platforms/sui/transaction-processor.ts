@@ -92,7 +92,7 @@ export const createTransactionProcessor = () => {
 
     canAutoSave: (transaction: Transaction, guessData: GuessData): boolean => {
       if (transaction.status === TransactionStatus.CANCEL) {
-        return true;
+        return false;
       }
 
       const counterpartyGuess = guessData.counterparty[transaction.counterparty];
